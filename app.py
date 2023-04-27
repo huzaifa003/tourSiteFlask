@@ -115,6 +115,8 @@ def admin():
 
         if ("booking" in request.form):
             return redirect("/admin/booking")
+        if ("user" in request.form):
+            return redirect("/admin/userDetails")
 
 
 @app.route("/admin/booking", methods=['GET', 'POST'])
@@ -146,7 +148,7 @@ def bookingDetails():
             return redirect("/admin/booking")
 
 
-@app.route("/admin/bookings/editBookings/<int:id>", methods=['GET', 'POST'])
+@app.route("/admin/booking/editBookings/<int:id>", methods=['GET', 'POST'])
 @login_required
 def editBookings(id):
     if request.method == "GET":
@@ -205,7 +207,14 @@ def userPage():
         if ("abc" in request.form):
             return "ABCCCCC"
 
+@app.route("/admin/userDetails")
+@login_required
 
+def userDetails():
+    result = con.execute(text("SELECT * FROM users"))
+    converted  =  convertResult(result)
+    return render_template("userDetails.html", data = converted)
+    
 def convertResult(result):
     resultList = []
     for data in result:
