@@ -167,17 +167,25 @@ def editBookings(id):
             print(converted)
             return render_template("editBookings.html", data=converted[0])
     else:
+        if ("upd" in request.form):
+            print("HELLLLLO")
+            source = request.form.get("source")
+            destination = request.form.get("destination")
+            source_time = request.form.get("source_time")
+            destination_time = request.form.get("destination_time")
+            price = request.form.get("price")
 
-        source = request.form.get("source")
-        destination = request.form.get("destination")
-        source_time = request.form.get("source_time")
-        destination_time = request.form.get("destination_time")
-        price = request.form.get("price")
-
-        print(source, id)
-        con.execute(text("UPDATE trips SET source = (:source), destination = (:destination), source_time = (:source_time), destination_time = (:destination_time), price = (:price) WHERE id = (:id)"), {
-                    "source": source, "destination": destination, "source_time": source_time, "destination_time": destination_time, "price": price, "id": id})
-        flash("Updated successfully")
+            print(source, id)
+            con.execute(text("UPDATE trips SET source = (:source), destination = (:destination), source_time = (:source_time), destination_time = (:destination_time), price = (:price) WHERE id = (:id)"), {
+                "source": source, "destination": destination, "source_time": source_time, "destination_time": destination_time, "price": price, "id": id})
+            flash("Updated successfully")
+            
+        if ("delete" in request.form):
+            con.execute(text("DELETE FROM trips WHERE id = (:id)"),{"id": id})
+            
+        if ("upd" in request.form):
+            print("YOOOOOOOO")
+            
         return redirect("/admin/booking")
 
 
