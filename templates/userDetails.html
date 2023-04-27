@@ -24,11 +24,11 @@
         </thead>
         <tbody>
             {% for rows in data %}
-            <form method="GET" action="{{url_for('editUser',id = rows['id'])}}">
+            <form method="GET" action="{{url_for('editDetails',id = rows['id'])}}">
                 <tr>
-                    <th scope="row">{{data['id']}}</th>
-                    <td>{{data['email']}}</td>
-                    <td>{{data['password']}}</td>
+                    <th scope="row">{{rows['id']}}</th>
+                    <td>{{rows['email']}}</td>
+                    <td>{{rows['password']}}</td>
                     <td><button name="{{rows['id']}}" class="btn text-white bg-success">Edit</button></td>
                 </tr>
             </form>

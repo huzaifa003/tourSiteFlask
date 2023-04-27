@@ -196,7 +196,7 @@ def editBookings(id):
 def userPage():
     if request.method == "GET":
         if (session['id'] == 0):
-            return redirect("/admin")
+            return redirect("/login")
         return render_template("userPage.html", id=session['id'], name=session['user'])
     else:
         if ("logout" in request.form):
@@ -211,10 +211,35 @@ def userPage():
 @login_required
 
 def userDetails():
-    result = con.execute(text("SELECT * FROM users"))
-    converted  =  convertResult(result)
-    return render_template("userDetails.html", data = converted)
+    if (session['id'] == 0):
+        result = con.execute(text("SELECT * FROM users"))
+        converted  =  convertResult(result)
+        print(converted)
+        return render_template("userDetails.html", data = converted)
+    return redirect("/login")
+
+@app.route("/admin/userDetails/editDetails/<int:id>", methods=['POST','GET'])
+@login_required
+
+def editDetails(id):
+    if (request.method == 'GET'):
+        if (session['id'] == 0):
+            print(id)
+            result = con.execute(text("SELECT * FROM users WHERE id = (:id) "),{"id" : id})
+            converted = convertResult(result)
+            print(converted)
+            return render_template("editDetails.html", email = converted[0]['email'], password  = converted[0]['password'])
+        return redirect("/login")
     
+    else:
+        email = request.form.get("email")
+        password = request.form.get("password")
+        
+        print(email)
+        con.execute(text("UPDATE users SET email = (:mail) , password = (:password) WHERE id = (:id)"), {"mail": email, "password": password, "id": id})
+        return redirect("/admin/userDetails")
+    
+
 def convertResult(result):
     resultList = []
     for data in result:
