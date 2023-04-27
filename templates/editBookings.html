@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>edit Bookings</title>
+</head>
+<body>
+    <form method="POST">
+        <label for="source"> Source </label>
+        <input name="source" type="text" class="form-control" id="source" value="{{data['source']}}">
+
+        <label for="destination"> Destination </label>
+        <input name="destination" type="text" class="form-control" id="destination" value="{{data['destination']}}">
+
+        <label for="source_time"> source_time </label>
+        <input name="source_time" type="time" value="{{data['source_time']}}">
+
+        <label for="destination_time"> destination_time </label>
+        <input name="destination_time" value="{{data['destination_time']}}" type="time">
+
+        <label for="price"> Price </label>
+        <input name="price" type="number" value="{{data['price']}}">
+        <button name="update" type="submit"> Update Trip </button>
+    </form>
+</body>
+</html>

@@ -1,0 +1,23 @@
+*{
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+body{
+    background: url('../assets/main_bg.jpg') ;
+    background-repeat: no-repeat;
+    background-size: cover;
+    height: 100vh;
+    
+}
+.login_form{
+    background-color: white;
+    width: 50%;
+    margin: auto;
+   
+}
+button > a{
+    text-decoration: none;
+    color: white;
+}
+
