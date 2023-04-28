@@ -146,6 +146,7 @@ def bookingDetails():
                         "source": source, "destination": destination, "source_time": source_time, "destination_time": destination_time, "price": price})
 
             return redirect("/admin/booking")
+        return redirect("/login")
 
 
 @app.route("/admin/booking/editBookings/<int:id>", methods=['GET', 'POST'])
@@ -207,16 +208,20 @@ def userPage():
         if ("abc" in request.form):
             return "ABCCCCC"
 
-@app.route("/admin/userDetails")
+@app.route("/admin/userDetails", methods = ["POST", "GET"])
 @login_required
 
 def userDetails():
-    if (session['id'] == 0):
-        result = con.execute(text("SELECT * FROM users"))
-        converted  =  convertResult(result)
-        print(converted)
-        return render_template("userDetails.html", data = converted)
+    if request.method == 'GET':
+        if (session['id'] == 0):
+            result = con.execute(text("SELECT * FROM users"))
+            converted  =  convertResult(result)
+            print(converted)
+            return render_template("userDetails.html", data = converted)
+        return redirect("/login")
+    
     return redirect("/login")
+
 
 @app.route("/admin/userDetails/editDetails/<int:id>", methods=['POST','GET'])
 @login_required
