@@ -201,6 +201,8 @@ def trips():
     if (request.method == 'GET'):
         results = con.execute(text("SELECT source, id FROM trips"))
         return render_template("trips.html", data = convertResult(results), selected = "")
+    else:
+        return redirect("/login")
 
 @app.route("/destinations")
 def destinations():
@@ -283,16 +285,55 @@ def userPage():
     if request.method == "GET":
         if (session['id'] == 0):
             return redirect("/login")
-        return render_template("userPage.html", id=session['id'], name=session['user'])
+        result = con.execute(text("SELECT * FROM bookings INNER JOIN trips ON bookings.booking_id = trips.id WHERE bookings.user_id = (:user_id)"), {"user_id" : session['id']})
+        converted = convertResult(result)
+        
+        for i in converted:
+            i['source_time'] = str(i['source_time'])
+            i['destination_time'] = str(i['destination_time'])
+        
+        return render_template("userPage.html", id=session['id'], name=session['user'], data = converted)
     else:
+        
+        
+        
+        if ("booking" in request.form):
+            return redirect("/trips")
+        
         if ("logout" in request.form):
             session.pop('id', None)
             session.pop('user', None)
             return redirect("/login")
-
+        
         if ("abc" in request.form):
             return "ABCCCCC"
+        
+       
 
+@app.route("/deleteBooking", methods = ['GET','POST'])
+@login_required
+def delete():
+    if request.method == "POST":
+        id = request.form.get("id")
+        con.execute(text("DELETE FROM bookings WHERE b_id = (:id)"),{"id": id})
+        return "DELETED"
+    
+        
+        
+        
+        
+@app.route("/userPage/<string:id>", methods = ['POST','GET'])
+@login_required
+def deleteBooking(id):
+    if (request.method == "POST"):
+        if ("delete" in request.form):
+            print("HELLO")
+            return redirect("/userPage")
+    else:
+        return redirect("/userPage")
+    return redirect("/userPage")
+    
+    
 @app.route("/admin/userDetails", methods = ["POST", "GET"])
 @login_required
 
