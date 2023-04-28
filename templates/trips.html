@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.4/jquery.min.js"></script>
+    <title>Document</title>
+</head>
+
+<body>
+    <form method="GET">
+        <select id="source" onchange="getDestinations(this.value)">
+            <option> </option>
+            {% for rows in data %}
+            <option> {{rows['source']}} </option>
+            {%endfor%}
+
+        </select>
+    </form>
+
+    <form method="GET">
+        <select id="destinations" onchange="getTrips()">
+            <option> </option>
+        </select>
+
+    </form>
+
+    <select onchange="getTrips()"> <option> Standard </option> <option> Business </option> </select>
+
+    <table>
+        <thead>
+            <tr>
+                <th scope="col">#</th>
+                <th scope="col">Source</th>
+                <th scope="col">Source Time</th>
+
+                <th scope="col">Destination</th>
+                <th scope="col">destination_time</th>
+
+                <th scope="col">Price For Standard</th>
+                <th scope="col">Action</th>
+            </tr>
+        </thead>
+
+        <tbody id="tableBody">
+
+
+
+        </tbody>
+    </table>
+</body>
+
+<script>
+    function getDestinations(value) {
+        $.ajax({
+            method: "GET",
+            url: "/destinations",
+            data: { "source": value }
+        }).done((data) => {
+
+            destination = document.getElementById("destinations")
+            destination.innerHTML = "<option> </option>"
+            for (let index = 0; index < data.length; index++) {
+                const element = data[index];
+                destination.innerHTML += `<option> ${element.destination} </option>`
+            }
+
+        })
+    }
+
+    function getTrips() {
+
+        source = document.getElementById("source").value
+        destination = document.getElementById("destinations").value
+        type = document.getElementById("type").value
+        let multiplier = {"Business": 2, "Standard" : 1}
+
+
+        if (source == "" || destination == ""){
+            return;
+        }
+        $.ajax({
+            method: "GET",
+            url: "/getTrips",
+            data: { "source": source, "destination": destination, "multiplier" : multiplier[type] }
+        }).done((data) => {
+            console.log(data)
+
+            tableBody = document.getElementById("tableBody")
+            tableBody.innerHTML = ""
+            for (let index = 0; index < data.length; index++) {
+
+                const element = data[index];
+                id = "" + element.id
+                tableBody.innerHTML += `
+                <tr>
+                    <th scope="row">${element.id}</th>
+                    <td>${element['source']}</td>
+                    <td>${element['source_time']}</td>
+                    <td>${element['destination']}</td>
+                    <td>${element['destination_time']}</td>
+                    <td>${element['price']}</td>
+                    <td> </td>
+                    <td><button onclick="book(this.id)" id = ${element.id}  class="btn text-white bg-success">Book</button></td>
+                </tr>
+
+                `
+            }
+
+        })
+    }
+
+    function book(id) {
+        $.ajax({
+            method : "GET",
+            url: "/book",
+            data : {"id" : id},
+            success:function(response){ document.write(response)}
+        })
+    }
+</script>
+
+</html>

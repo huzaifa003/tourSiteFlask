@@ -1,7 +1,8 @@
 
 
-import re
-from flask import session, render_template, redirect, request, Flask, url_for, flash
+
+from lib2to3.pytree import convert
+from flask import session, render_template, redirect, request, Flask, url_for, flash, jsonify
 from sqlalchemy import create_engine, text
 from functools import wraps
 # Flask constructor takes the name of
@@ -191,7 +192,51 @@ def editBookings(id):
             
         return redirect("/admin/booking")
 
+@app.route("/trips", methods = ['GET','POST'])
+def trips():
+    if (request.method == 'GET'):
+        results = con.execute(text("SELECT source, id FROM trips"))
+        return render_template("trips.html", data = convertResult(results), selected = "")
 
+@app.route("/destinations")
+def destinations():
+    source = request.args.get("source")
+    
+    results = con.execute(text("SELECT destination FROM trips WHERE source = (:source)"),{"source": source})
+    converted = convertResult(results)
+    # for data in converted:
+    #     data['source_time'] = str(data['source_time'])
+    #     data['destination_time'] = str(data['destination_time'])
+    # print(converted)
+    return jsonify(converted)
+
+@app.route("/getTrips")
+def getTrips():
+    source = request.args.get("source")
+    destination = request.args.get("destination")
+    
+    print(source,destination)
+    results = con.execute(text("SELECT * FROM trips WHERE source = (:source) AND destination = (:destination)"),{"source": source, "destination" : destination})
+    converted = convertResult(results)
+    for data in converted:
+        data['source_time'] = str(data['source_time'])
+        data['destination_time'] = str(data['destination_time'])
+    # print(converted)
+    return jsonify(converted)
+
+@app.route("/book", methods = ['GET','POST'])
+@login_required
+
+def book():
+    if (request.method == "GET"):
+        if (session['id'] == 0):
+            return redirect("/login")
+        id = request.args.get("id")
+        print(id)
+        if id != None:
+            return render_template("book.html", id = id)
+        return redirect("/login")
+    
 @app.route("/userPage", methods=['GET', 'POST'])
 @login_required
 def userPage():
@@ -243,6 +288,7 @@ def editDetails(id):
         print(email)
         con.execute(text("UPDATE users SET email = (:mail) , password = (:password) WHERE id = (:id)"), {"mail": email, "password": password, "id": id})
         return redirect("/admin/userDetails")
+
     
 
 def convertResult(result):
