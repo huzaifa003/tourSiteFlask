@@ -1,10 +1,14 @@
 
 
 
+from audioop import mul
+from cmath import log
+from datetime import date
 from lib2to3.pytree import convert
 from flask import session, render_template, redirect, request, Flask, url_for, flash, jsonify
 from sqlalchemy import create_engine, text
 from functools import wraps
+from datetime import date
 # Flask constructor takes the name of
 # current module (__name__) as argument.
 app = Flask(__name__)
@@ -214,28 +218,64 @@ def destinations():
 def getTrips():
     source = request.args.get("source")
     destination = request.args.get("destination")
-    
+    multiplier = request.args.get("multiplier")
     print(source,destination)
     results = con.execute(text("SELECT * FROM trips WHERE source = (:source) AND destination = (:destination)"),{"source": source, "destination" : destination})
     converted = convertResult(results)
     for data in converted:
         data['source_time'] = str(data['source_time'])
         data['destination_time'] = str(data['destination_time'])
+        data['price'] = data['price'] * int(multiplier)
     # print(converted)
     return jsonify(converted)
 
-@app.route("/book", methods = ['GET','POST'])
+@app.route("/book", methods = ['POST'])
 @login_required
 
 def book():
-    if (request.method == "GET"):
-        if (session['id'] == 0):
-            return redirect("/login")
-        id = request.args.get("id")
-        print(id)
-        if id != None:
-            return render_template("book.html", id = id)
-        return redirect("/login")
+   if request.method == "POST":
+       if (session['id'] == 0):
+           return "Can't BOOK"
+       id = int(request.form.get("id"))
+       multiplier = int(request.form.get("multiplier"))
+       departure = request.form.get("date")
+       seats = int(request.form.get("seats"))
+       print(multiplier)
+       print(id)
+       print(departure)
+       print(seats)
+       
+       result = con.execute(text("SELECT price FROM trips WHERE id = (:id)"),{"id": id})
+       converted = convertResult(result)[0]
+       price = converted['price']
+       
+       cost = price * int(multiplier) * int(seats)
+       print(cost)
+       booked = getSeats(id,departure)
+       if (seats > 50):
+           return "CANT BOOK MORE THAN 50"
+       if (booked  + seats  > 50):
+           return "SEATS FILLED : Available " + str(50 - booked)
+
+       con.execute(text("INSERT INTO bookings (user_id, booking_id, cost, seats, departure) VALUES (:user_id, :booking_id, :cost, :seats, :departure)") ,{"user_id" : session['id'], "booking_id": id,"cost": cost,"seats": seats,"departure": departure})
+       return "Booked"
+
+def getSeats(trip_id, departure):
+    print("HELLLLLLLLLLLLLLLLLLLLLLL")
+    result = con.execute(text("SELECT SUM(seats) as 'booked' FROM bookings WHERE booking_id = (:trip_id) AND departure = (:departure)"),{"trip_id" : trip_id, "departure" : departure})
+    
+    
+    if (result == None):
+        return 0
+
+    for r in result:
+        print(r,"JJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJ")
+        if (r[0] == None):
+            return 0
+        return r[0]
+# @app.route("/bookSeat", methods=['POST'])
+# @login_required
+# def bookSeat():
     
 @app.route("/userPage", methods=['GET', 'POST'])
 @login_required

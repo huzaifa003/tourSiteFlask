@@ -27,7 +27,10 @@
 
     </form>
 
-    <select onchange="getTrips()"> <option> Standard </option> <option> Business </option> </select>
+    <select id="type" onchange="getTrips()">
+        <option> Standard </option>
+        <option> Business </option>
+    </select>
 
     <table>
         <thead>
@@ -39,7 +42,10 @@
                 <th scope="col">Destination</th>
                 <th scope="col">destination_time</th>
 
-                <th scope="col">Price For Standard</th>
+                <th scope="col">Price</th>
+
+                <th scope = "col"> Date and Seats    </th>
+
                 <th scope="col">Action</th>
             </tr>
         </thead>
@@ -75,25 +81,30 @@
         source = document.getElementById("source").value
         destination = document.getElementById("destinations").value
         type = document.getElementById("type").value
-        let multiplier = {"Business": 2, "Standard" : 1}
+        console.log(type)
+        let multiplier = { "Business": 2, "Standard": 1 }
 
 
-        if (source == "" || destination == ""){
+        if (source == "" || destination == "") {
             return;
         }
         $.ajax({
             method: "GET",
             url: "/getTrips",
-            data: { "source": source, "destination": destination, "multiplier" : multiplier[type] }
+            data: { "source": source, "destination": destination, "multiplier": multiplier[type] }
         }).done((data) => {
             console.log(data)
 
             tableBody = document.getElementById("tableBody")
             tableBody.innerHTML = ""
+
+            let currentDate = new Date().toJSON().slice(0, 10);
             for (let index = 0; index < data.length; index++) {
 
                 const element = data[index];
-                id = "" + element.id
+                did = "d" + element.id
+                sid = "s" + element.id
+                console.log(did)
                 tableBody.innerHTML += `
                 <tr>
                     <th scope="row">${element.id}</th>
@@ -102,7 +113,11 @@
                     <td>${element['destination']}</td>
                     <td>${element['destination_time']}</td>
                     <td>${element['price']}</td>
-                    <td> </td>
+                    <td>DATE OF DEPARTURE
+                    <input required id= ${did} value = ${currentDate} name="date" onchange="getSeats(this.value)" type="date" min="${currentDate}">
+                    SEATS
+                    <input required id= ${sid} name="seats" type="number" min="0" max="50">
+                     </td>
                     <td><button onclick="book(this.id)" id = ${element.id}  class="btn text-white bg-success">Book</button></td>
                 </tr>
 
@@ -113,11 +128,46 @@
     }
 
     function book(id) {
+        type = document.getElementById("type").value
+        console.log(type)
+        let multiplier = { "Business": 2, "Standard": 1 }
+        seats = document.getElementById("s" + id).value
+        if (seats > 50)
+        {
+            alert("CANT BOOK MORE THAN 50")
+            return;
+        }
+        departure = document.getElementById("d"+id).value
+        console.log(id)
+        
+        
+
         $.ajax({
-            method : "GET",
+            method: "POST",
             url: "/book",
-            data : {"id" : id},
-            success:function(response){ document.write(response)}
+            data: { "id": id, "multiplier": multiplier[type], "date" : departure, "seats" : seats   },
+            success: function (response) { document.getElementById(id).textContent =  response}
+        })
+    }
+
+    function checkSeats(id, seats){
+        $.ajax({
+            url: "/getSeats",
+            method : "GET",
+            data : {"trip_id" : id, "date" : departure},
+            success : function(response) { if (seats > parseInt(response)) {alert("SEATS FILLED"); return -1; }}
+        })
+    }
+    function getSeats(value) {
+        
+    }
+
+    function bookSeat() {
+        $.ajax({
+            url: "/book",
+            method: "POST"
+        }).done((data)=>{
+            document.write(data)
         })
     }
 </script>

@@ -7,7 +7,36 @@
     <title>Book</title>
 </head>
 <body>
-    {{id}}
+    <form method="POST">
+    <h1></h1>
+    <input disabled hidden value="{{data['id']}}">
+    <h1>{{data['source']}}</h1>
+    <h1>{{data['source_time']}}</h1>
+    <h1>{{data['destination']}}</h1>
+    <h1>{{data['destination_time']}}</h1>
+    <h1>{{data['price']}}</h1>
+    DATE OF DEPARTURE
+    <input name="date" onchange="getSeats(this.value)" type="date" min="{{date}}" >
+    SEATS
+    <input name="seats" type="number" min="0" max="50"> 
+
     
+        <button onclick="bookSeat()" name="book" type="button"> Book </button>
+    </form>
 </body>
+
+<script>
+    function getSeats(value) {
+        console.log(value)
+    }
+
+    function bookSeat() {
+        $.ajax({
+            url: "/book",
+            method: "POST"
+        }).done((data)=>{
+            document.write(data)
+        })
+    }
+</script>
 </html>
