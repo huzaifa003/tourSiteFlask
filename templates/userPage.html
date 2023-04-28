@@ -33,6 +33,8 @@
           <th scope="col">Destination</th>
           <th scope="col">destination_time</th>
 
+          <th scope="col">Seats</th>
+
           <th scope="col">Price</th>
           <th scope="col">departure</th>
           <th scope="col">Action</th>
@@ -47,6 +49,7 @@
             <td>{{rows['source_time']}}</td>
             <td>{{rows['destination']}}</td>
             <td>{{rows['destination_time']}}</td>
+            <td>{{rows['seats']}}</td>
             <td>${{rows['cost']}}</td>
             <td>{{rows['departure']}}</td>
             <td><button id = "{{rows['b_id']}}" onclick="del(this.id)"  class="btn text-white bg-danger">Deletee</button></td>
