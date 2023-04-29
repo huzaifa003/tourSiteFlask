@@ -37,11 +37,10 @@ def login_required(f):
 
 
 @app.route('/', methods=['GET'])
-@login_required
 # ‘/’ URL is bound with hello_world() function.
 def hello_world():
     if request.method == "GET":
-        return 'Hello World'
+        return redirect("/trips")
 
 
 @app.route("/login", methods=['GET', 'POST'])
@@ -232,10 +231,11 @@ def getTrips():
     return jsonify(converted)
 
 @app.route("/book", methods = ['POST'])
-@login_required
 
 def book():
    if request.method == "POST":
+       if ('user' not in session):
+           return "LOGIN FIRST"
        if (session['id'] == 0):
            return "Can't BOOK"
        id = int(request.form.get("id"))
