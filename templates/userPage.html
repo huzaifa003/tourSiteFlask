@@ -15,8 +15,7 @@
   <nav class="navbar bg-body-tertiary">
     <div class="container-fluid">
       <span class="navbar-brand mb-0 h1">Hello {{name}} With ID {{id}}</span>
-      <form method="POST"> <button name="logout" type="submit"> LOGOUT</button> </form>
-
+      <form method="POST"> <button name="logout" class="btn btn-outline-primary" type="submit"> LOGOUT</button> </form>
     </div>
   </nav>
 
@@ -41,7 +40,7 @@
         </tr>
       </thead>
       <tbody>
-        {% for rows in data %}
+       <h2 class="bg-warning text-white text-center my-3">{% for rows in data %}</h2> 
      
           <tr>
             <th scope="row">{{rows['b_id']}}</th>
@@ -54,8 +53,8 @@
             <td>{{rows['departure']}}</td>
             <td><button id = "{{rows['b_id']}}" onclick="del(this.id)"  class="btn text-white bg-danger">Deletee</button></td>
           </tr>
-    
-        {%endfor%}
+    <h4 class="bg-success text-white text-center my-3">{%endfor%}</h4>
+      
         <!-- <tr>
               <th scope="row">1</th>
               <td>Mark</td>

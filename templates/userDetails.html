@@ -5,6 +5,7 @@
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha3/dist/css/bootstrap.min.css">
     <title>User Details</title>
 </head>
 
@@ -15,15 +16,13 @@
                 <th scope="col">#</th>
                 <th scope="col">Email</th>
                 <th scope="col">Password</th>
-
                 <th scope="col">Action</th>
-                
-
-                
             </tr>
         </thead>
         <tbody>
-            {% for rows in data %}
+           <h2 class="bg-warning text-white text-center my-3">{% for rows in data %}</h2>
+
+
             <form method="GET" action="{{url_for('editDetails',id = rows['id'])}}">
                 <tr>
                     <th scope="row">{{rows['id']}}</th>
@@ -32,11 +31,13 @@
                     <td><button name="{{rows['id']}}" class="btn text-white bg-success">Edit</button></td>
                 </tr>
             </form>
-            {%endfor%}
+
+            <h4 class="bg-success text-white text-center my-3"> {%endfor%}</h2>
+           
         </tbody>
     </table>
 
-    <form method="POST">
+    <form class="text-center" method="POST">
 
         <button name="home" type="submit" class="btn btn-primary my-2"> Go Home </a> </button>
 
